@@ -43,7 +43,7 @@
             
             if (match) {
                 let placeId = match[1];
-                fetch(`https://apis.roblox.com/universes/v1/places/${placeId}/universe`) 
+                fetch(`https://develop.roblox.com/v1/universes/get-universe-containing-place?placeId=${placeId}`)
                     .then(response => response.json())
                     .then(universeData => {
                         if (universeData.universeId) {
@@ -78,3 +78,4 @@
     </script>
 </body>
 </html>
+
