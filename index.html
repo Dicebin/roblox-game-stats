@@ -42,21 +42,34 @@
             let match = input.match(/roblox\.com\/games\/(\d+)/);
             
             if (match) {
-                let gameId = match[1];
-                fetch(`https://games.roblox.com/v1/games?universeIds=${gameId}`)
+                let placeId = match[1];
+                fetch(`https://apis.roblox.com/universes/v1/places/${placeId}/universe`) 
                     .then(response => response.json())
-                    .then(data => {
-                        if (data.data && data.data.length > 0) {
-                            let game = data.data[0];
-                            document.querySelector('.info').innerHTML = 
-                                `Visits: ${game.visits.toLocaleString()}<br>Active Players: ${game.playing.toLocaleString()}`;
+                    .then(universeData => {
+                        if (universeData.universeId) {
+                            let universeId = universeData.universeId;
+                            fetch(`https://games.roblox.com/v1/games?universeIds=${universeId}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.data && data.data.length > 0) {
+                                        let game = data.data[0];
+                                        document.querySelector('.info').innerHTML = 
+                                            `Visits: ${game.visits.toLocaleString()}<br>Active Players: ${game.playing.toLocaleString()}`;
+                                    } else {
+                                        document.querySelector('.info').innerText = "Invalid Game ID or No Data Found";
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching game data:', error);
+                                    document.querySelector('.info').innerText = "Error retrieving game data";
+                                });
                         } else {
-                            document.querySelector('.info').innerText = "Invalid Game ID or No Data Found";
+                            document.querySelector('.info').innerText = "Invalid Place ID or No Universe Found";
                         }
                     })
                     .catch(error => {
-                        console.error('Error fetching data:', error);
-                        document.querySelector('.info').innerText = "Error retrieving data";
+                        console.error('Error fetching universe ID:', error);
+                        document.querySelector('.info').innerText = "Error retrieving universe ID";
                     });
             } else {
                 document.querySelector('.info').innerText = "Please enter a valid Roblox game URL";
